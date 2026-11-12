@@ -81,3 +81,11 @@ No se usa `ReverseMap`: los modelos de entrada y salida tienen formas distintas 
 
 El código, el SQL y las solicitudes están preparados. No se adjuntan capturas de respuestas HTTP: para capturarlas se requiere ejecutar SQL Server, crear la base y correr las solicitudes localmente. Tras verificar cada respuesta, agrega las capturas solicitadas por la consigna junto con el enlace al repositorio.
 
+
+## Capturas de pruebas automatizadas
+
+- [Resumen de endpoints de dueños](evidencias/PruebasEndpoints-Duenos.png)
+- [Resumen de endpoints de mascotas](evidencias/PruebasEndpoints-Mascotas.png)
+- [Resultado de ejecución de pruebas (TRX)](evidencias/pruebas-endpoints.trx)
+
+Las pruebas usan SQLite en memoria y verifican rutas, reglas y códigos indicados en cada resumen. No son capturas de Swagger ni validan una instancia externa de SQL Server.
