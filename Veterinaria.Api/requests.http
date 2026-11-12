@@ -1,0 +1,55 @@
+@baseUrl = https://localhost:7001
+
+### GET 200 dueños
+GET {{baseUrl}}/api/duenos
+
+### GET 200 filtro
+GET {{baseUrl}}/api/mascotas?especie=Perro&duenoId=1
+
+### GET 200 ruta anidada
+GET {{baseUrl}}/api/duenos/1/mascotas
+
+### GET 404
+GET {{baseUrl}}/api/mascotas/9999
+
+### POST 201 (dueño nuevo)
+POST {{baseUrl}}/api/duenos
+Content-Type: application/json
+
+{"nombre":"Carla Díaz","correo":"carla@example.com","telefono":"999555666"}
+
+### POST 400 validación
+POST {{baseUrl}}/api/duenos
+Content-Type: application/json
+
+{"nombre":"A","correo":"correo-invalido","telefono":"1"}
+
+### POST 409 correo duplicado
+POST {{baseUrl}}/api/duenos
+Content-Type: application/json
+
+{"nombre":"Ana duplicada","correo":"ana@example.com","telefono":"999000111"}
+
+### POST 201 mascota (dueño semilla 1)
+POST {{baseUrl}}/api/mascotas
+Content-Type: application/json
+
+{"nombre":"Nina","especie":"Gato","raza":"Siamés","fechaNacimiento":"2023-05-04","duenoId":1}
+
+### POST 409 dueño inexistente
+POST {{baseUrl}}/api/mascotas
+Content-Type: application/json
+
+{"nombre":"Nina","especie":"Gato","raza":"Siamés","fechaNacimiento":"2023-05-04","duenoId":9999}
+
+### PUT 204 y DELETE 204 requieren IDs creados
+PUT {{baseUrl}}/api/mascotas/4
+Content-Type: application/json
+
+{"nombre":"Nina actualizada","especie":"Gato","raza":"Siamés","fechaNacimiento":"2023-05-04","duenoId":1}
+
+### DELETE 204
+DELETE {{baseUrl}}/api/mascotas/4
+
+### DELETE dueño con mascotas devuelve 409
+DELETE {{baseUrl}}/api/duenos/1
