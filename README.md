@@ -1,5 +1,41 @@
 # API veterinaria por capas
 
+## Laboratorio 14 autenticación JWT
+
+La API protege la información de dueños y mascotas. La Recepcionista puede crear y actualizar datos de dueños y registrar mascotas; la Veterinaria puede además actualizar/eliminar mascotas y eliminar dueños.
+
+Aplica `sql/01_create_database.sql` y después `sql/02_auth_jwt.sql` en SQL Server. El segundo script crea `Usuarios` con correo único y agrega una cuenta por rol para pruebas. Ambas cuentas semilla usan la contraseña `VetCare123!`; son solo de laboratorio. La clave JWT real se obtiene de User Secrets, no del repositorio:
+
+```powershell
+dotnet user-secrets --project Veterinaria.Api set "ConnectionStrings:Veterinaria" "<cadena-local-de-tu-SQL-Server>"
+dotnet user-secrets --project Veterinaria.Api set "Jwt:Clave" "pon-aqui-un-secreto-aleatorio-de-al-menos-32-caracteres"
+dotnet run --project Veterinaria.Api
+```
+
+La web de la veterinaria se abre en la ruta raíz `/`; Swagger queda disponible en `/swagger`. Ninguna clave JWT ni cadena de conexión se almacena en los archivos del repositorio.
+
+Swagger muestra el botón **Authorize**. Inicia sesión en `POST /api/auth/login`, copia el token y pégalo como Bearer. El registro crea únicamente usuarios Recepcionista; el servidor decide el rol. Para crear una cuenta de Veterinario, se asigna por un administrador en SQL después de registrar su correo.
+
+### Matriz de permisos
+
+| Endpoint | Sin token | Recepcionista | Veterinario |
+|---|---:|---:|---:|
+| `POST /api/auth/registro` y `POST /api/auth/login` | Sí | Sí | Sí |
+| `GET /api/auth/perfil` | 401 | Sí | Sí |
+| `GET /api/duenos`, `GET /api/mascotas` y consultas por ID | 401 | Sí | Sí |
+| `POST /api/duenos`, `PUT /api/duenos/{id}`, `POST /api/mascotas` | 401 | Sí | Sí |
+| `DELETE /api/duenos/{id}`, `PUT/DELETE /api/mascotas/{id}` | 401 | 403 | Sí |
+
+`401` significa que falta un token válido o que el login falló; `403` significa que el token es válido pero su rol no tiene ese permiso. El JWT incluye `sub`, `email` y `rol`; no debe contener contraseñas ni hashes. La firma valida emisor, audiencia, vencimiento e integridad. Para regenerar una clave de prueba, usa el endpoint de registro y cambia el rol con SQL.
+
+### Sustentación de seguridad
+
+- El hash BCrypt se almacena en vez de la clave; una filtración de la base no revela directamente las contraseñas y cada hash incorpora salt.
+- El rol se asigna en servidor y se firma en el JWT para impedir que el cliente se eleve permisos alterando su petición.
+- Nunca se guardan claves JWT ni cadenas de conexión con credenciales en el repositorio. Usa User Secrets en desarrollo y un gestor de secretos en despliegue.
+
+`Veterinaria.Api/requests.http` contiene ejemplos iniciales de registro, login, perfil y consulta protegida. Para revisar todos los códigos de la consigna (incluyendo 204, 401, 403 y 409), combina las peticiones existentes de la S13 con token de ambos roles y el SQL semilla.
+
 API REST en ASP.NET Core 10 para registrar dueños y mascotas. Cada dueño puede tener varias mascotas; cada mascota pertenece a un dueño. Los controladores exponen solo DTOs.
 
 ## Arquitectura
@@ -17,10 +53,15 @@ Ejecuta `sql/01_create_database.sql` en SQL Server. El script crea y carga `Vete
 
 ```powershell
 dotnet tool install --global dotnet-ef --version 10.*
-dotnet ef dbcontext scaffold "Server=localhost;Database=VeterinariaDb;Trusted_Connection=True;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer --project Veterinaria.Datos --startup-project Veterinaria.Api --output-dir Models --context VeterinariaContext --no-onconfiguring --force
 ```
 
-El contexto y las entidades incluidos corresponden al esquema del script. En el flujo Scaffold exigido, mueve las clases `Dueno` y `Mascota` generadas a `Veterinaria.Entidades/Models` y actualiza sus namespaces; el contexto queda en Datos. La conexión local de ejemplo se configura en `Veterinaria.Api/appsettings.json`; usa secretos de usuario o variables de entorno para credenciales reales.
+El contexto y las entidades incluidos corresponden al esquema del script. En el flujo Scaffold exigido, mueve las clases `Dueno` y `Mascota` generadas a `Veterinaria.Entidades/Models` y actualiza sus namespaces; el contexto queda en Datos. Para Scaffold, carga la conexión local desde una variable de entorno que no subas al repositorio:
+
+```powershell
+$connectionString = $env:VETERINARIA_DB_CONNECTION
+if (-not $connectionString) { throw 'Define VETERINARIA_DB_CONNECTION localmente.' }
+dotnet ef dbcontext scaffold $connectionString Microsoft.EntityFrameworkCore.SqlServer --project Veterinaria.Datos --startup-project Veterinaria.Api --output-dir Models --context VeterinariaContext --no-onconfiguring --force
+```
 
 ## Ejecutar
 
@@ -77,9 +118,9 @@ La suite automatizada pasó 13 de 13 pruebas. Repositorio público: https://gith
 
 No se usa `ReverseMap`: los modelos de entrada y salida tienen formas distintas y las navegaciones/claves requieren control explícito.
 
-## Verificación académica pendiente
+## Evidencia de verificación
 
-El código, el SQL y las solicitudes están preparados. No se adjuntan capturas de respuestas HTTP: para capturarlas se requiere ejecutar SQL Server, crear la base y correr las solicitudes localmente. Tras verificar cada respuesta, agrega las capturas solicitadas por la consigna junto con el enlace al repositorio.
+Se ejecutaron 53 solicitudes HTTP contra la API local, conectada a SQL Server, con tokens de Recepcionista y Veterinario. El registro por caso está en `evidencias/pruebas-http-jwt-2026-11-18.csv`; incluye los resultados 200, 201, 204, 400, 401, 403, 404 y 409. Se limpiaron los registros temporales al terminar.
 
 
 ## Capturas de pruebas automatizadas
@@ -88,4 +129,11 @@ El código, el SQL y las solicitudes están preparados. No se adjuntan capturas 
 - [Resumen de endpoints de mascotas](evidencias/PruebasEndpoints-Mascotas.png)
 - [Resultado de ejecución de pruebas (TRX)](evidencias/pruebas-endpoints.trx)
 
-Las pruebas usan SQLite en memoria y verifican rutas, reglas y códigos indicados en cada resumen. No son capturas de Swagger ni validan una instancia externa de SQL Server.
+Las pruebas automatizadas originales usan SQLite en memoria. Además, la evidencia CSV registra las verificaciones HTTP locales realizadas contra SQL Server; no contiene tokens ni contraseñas.
+
+## Sustentación de seguridad
+
+1. **401 y 403:** `GET /api/mascotas` sin token devolvió 401 porque no había autenticación. `DELETE /api/mascotas/8` con token válido de Recepcionista devolvió 403 porque la ruta requiere el rol Veterinario.
+2. **Claims:** el token incluye `sub` para identificar al usuario, `email` para mostrar su perfil y `rol` para aplicar permisos. También incorpora emisor, audiencia y vencimiento. Nunca incluiría contraseñas, hashes, claves secretas ni datos sensibles innecesarios: el contenido del JWT firmado se puede leer, aunque no modificar sin invalidar la firma.
+3. **Contraseña en texto:** si se filtra la base de datos, cualquiera puede leer las claves y probarlas en otros servicios donde se hayan reutilizado. BCrypt guarda un hash unidireccional con salt; el login verifica la clave contra ese hash.
+4. **Rol asignado por el servidor:** el registro crea usuarios Recepcionista y no recibe el rol desde el cliente. Así, un usuario no puede solicitar permisos de Veterinario modificando su petición. La API lee el rol confiable de la base y lo firma en el token.

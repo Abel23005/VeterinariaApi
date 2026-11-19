@@ -53,3 +53,38 @@ DELETE {{baseUrl}}/api/mascotas/4
 
 ### DELETE dueño con mascotas devuelve 409
 DELETE {{baseUrl}}/api/duenos/1
+@baseUrl = https://localhost:7001
+@token = PASTE_TOKEN_HERE
+
+### Registro (rol Recepcionista asignado por el servidor)
+POST {{baseUrl}}/api/auth/registro
+Content-Type: application/json
+
+{"correo":"nuevo@example.com","clave":"ClaveSegura123!"}
+
+### Login recepción (seed: VetCare123!)
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{"correo":"recepcion@example.com","clave":"VetCare123!"}
+
+### Login veterinaria (seed: VetCare123!)
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{"correo":"veterinario@example.com","clave":"VetCare123!"}
+
+### Perfil (autenticado)
+GET {{baseUrl}}/api/auth/perfil
+Authorization: Bearer {{token}}
+
+### Mascotas (autenticado)
+GET {{baseUrl}}/api/mascotas
+Authorization: Bearer {{token}}
+
+### Crear mascota (ambos roles)
+POST {{baseUrl}}/api/mascotas
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"nombre":"Nube","especie":"Gato","raza":"Criollo","fechaNacimiento":"2022-06-01","duenoId":1}

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f7f2">
+  <title>VetCare · Gestión veterinaria</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main id="authScreen" class="auth-layout">
+    <section class="auth-art">
+      <div class="brand brand-light"><span class="brand-mark">✳</span><span>vetcare</span></div>
+      <div class="art-copy"><span class="eyebrow">EL CUIDADO, MÁS CERCA</span><h1>Una vida mejor<br>para cada mascota.</h1><p>Todo lo que tu equipo necesita para cuidar con calma y acompañar con cariño.</p></div>
+      <div class="art-paw paw-one">✿</div><div class="art-paw paw-two">✿</div>
+      <div class="art-bottom"><span>Atención con sentido</span><span>•</span><span>Historias que importan</span></div>
+    </section>
+    <section class="auth-panel">
+      <div class="auth-card">
+        <div class="brand brand-dark"><span class="brand-mark">✳</span><span>vetcare</span></div>
+        <div id="loginFormWrap">
+          <div class="auth-heading"><span class="eyebrow">PORTAL DEL EQUIPO</span><h2>Qué bueno verte</h2><p>Ingresa a tu espacio de trabajo.</p></div>
+          <form id="loginForm" class="form-stack">
+            <label>Correo electrónico<input name="correo" type="email" autocomplete="username" placeholder="tu@veterinaria.com" required></label>
+            <label>Contraseña<input name="clave" type="password" autocomplete="current-password" placeholder="Ingresa tu contraseña" required></label>
+            <button class="button button-primary button-wide" type="submit">Iniciar sesión <span>→</span></button>
+          </form>
+          <p class="auth-switch">¿Es tu primera vez? <button class="text-button" data-show-register>Crear cuenta</button></p>
+          <p class="demo-tip"><span>✦</span> Cuenta de demo: <b>recepcion@example.com</b><br><span class="demo-spacer"></span>Clave: <b>VetCare123!</b></p>
+        </div>
+        <div id="registerFormWrap" hidden>
+          <div class="auth-heading"><span class="eyebrow">BIENVENIDO AL EQUIPO</span><h2>Crear una cuenta</h2><p>El registro crea un perfil de Recepcionista.</p></div>
+          <form id="registerForm" class="form-stack">
+            <label>Correo electrónico<input name="correo" type="email" autocomplete="email" placeholder="tu@veterinaria.com" required></label>
+            <label>Contraseña<input name="clave" type="password" autocomplete="new-password" minlength="8" placeholder="Mínimo 8 caracteres" required></label>
+            <button class="button button-primary button-wide" type="submit">Crear cuenta <span>→</span></button>
+          </form>
+          <p class="auth-switch">¿Ya tienes una cuenta? <button class="text-button" data-show-login>Iniciar sesión</button></p>
+        </div>
+        <p class="auth-foot">Un lugar más amable para cuidar.</p>
+      </div>
+    </section>
+  </main>
+
+  <div id="appShell" class="app-shell" hidden>
+    <aside class="sidebar">
+      <a href="#inicio" class="brand sidebar-brand"><span class="brand-mark">✳</span><span>vetcare</span></a>
+      <div class="clinic-switch"><span class="clinic-icon">✚</span><span><b>Clínica VetCare</b><small>Espacio de trabajo</small></span><span class="chevron">⌄</span></div>
+      <span class="nav-caption">MENÚ PRINCIPAL</span>
+      <nav class="main-nav">
+        <button class="nav-link active" data-view="inicio"><span class="nav-icon">⌂</span>Resumen</button>
+        <button class="nav-link" data-view="mascotas"><span class="nav-icon">♡</span>Mascotas</button>
+        <button class="nav-link" data-view="duenos"><span class="nav-icon">♧</span>Dueños</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="help-card"><span class="help-spark">✧</span><b>¿Necesitas ayuda?</b><p>Estamos aquí para ti y tu equipo.</p><a href="mailto:ayuda@vetcare.test">Contactar soporte <span>↗</span></a></div>
+        <div class="user-card"><div id="userAvatar" class="avatar">V</div><div class="user-copy"><b id="userEmail">Equipo VetCare</b><small id="userRole">Recepcionista</small></div><button id="logoutBtn" class="icon-button logout" aria-label="Cerrar sesión" title="Cerrar sesión">↪</button></div>
+      </div>
+    </aside>
+    <section class="workspace">
+      <header class="topbar"><div class="breadcrumbs"><span>VetCare</span><span class="slash">/</span><b id="crumb">Resumen</b></div><div class="topbar-actions"><span class="today-label" id="todayLabel"></span><div class="top-avatar" id="topAvatar">V</div></div></header>
+      <main class="page-content">
+        <div id="notice" class="notice" role="status" hidden></div>
+        <section id="view-inicio" class="view active-view">
+          <div class="welcome-row"><div><span class="eyebrow">TU CLÍNICA, EN UN SOLO LUGAR</span><h1 id="greeting">Hola, equipo <span>✦</span></h1><p>Un vistazo a todo lo que está pasando hoy.</p></div><button id="quickPetBtn" class="button button-primary"><span class="plus">+</span> Registrar mascota</button></div>
+          <div class="hero-banner"><div class="hero-copy"><span class="hero-kicker"><span class="live-dot"></span> CUIDADO QUE SE SIENTE</span><h2>Pequeños pacientes,<br>grandes historias.</h2><p>Gracias por hacer de cada visita una experiencia más amable.</p></div><div class="hero-illustration" aria-hidden="true"><div class="sun"></div><div class="plant plant-a">♧</div><div class="plant plant-b">♧</div><div class="pet-blob"><div class="ear ear-a"></div><div class="ear ear-b"></div><div class="pet-face"><i></i><i></i><b></b><span></span></div></div><div class="hero-ground"></div><span class="star star-a">✦</span><span class="star star-b">✧</span></div></div>
+          <div class="section-heading"><div><h2>Así va tu clínica</h2><p>Un resumen de tus registros.</p></div><button class="subtle-link" data-view="mascotas">Ver mascotas <span>→</span></button></div>
+          <div class="stats-grid">
+            <article class="stat-card"><div class="stat-top"><span class="stat-label">Mascotas registradas</span><span class="stat-icon stat-lilac">♡</span></div><strong id="petCount">—</strong><small>pacientes en tu clínica</small><div class="stat-decoration dec-lilac">✦</div></article>
+            <article class="stat-card"><div class="stat-top"><span class="stat-label">Dueños registrados</span><span class="stat-icon stat-peach">♧</span></div><strong id="ownerCount">—</strong><small>familias que confían en ti</small><div class="stat-decoration dec-peach">✦</div></article>
+            <article class="stat-card"><div class="stat-top"><span class="stat-label">Especies atendidas</span><span class="stat-icon stat-mint">✿</span></div><strong id="speciesCount">—</strong><small>compañías diferentes</small><div class="stat-decoration dec-mint">✦</div></article>
+          </div>
+          <div class="section-heading recent-heading"><div><h2>Pacientes recientes</h2><p>Las últimas mascotas agregadas.</p></div><button class="subtle-link" data-view="mascotas">Ver todos <span>→</span></button></div>
+          <div class="table-wrap"><table><thead><tr><th>MASCOTA</th><th>ESPECIE</th><th>FAMILIA</th><th>F. NACIMIENTO</th><th></th></tr></thead><tbody id="recentPets"><tr><td colspan="5" class="loading-cell">Cargando tus pacientes…</td></tr></tbody></table></div>
+        </section>
+        <section id="view-mascotas" class="view">
+          <div class="page-title-row"><div><span class="eyebrow">PACIENTES</span><h1>Nuestras mascotas</h1><p>El registro de quienes hacen especial cada visita.</p></div><button id="addPetBtn" class="button button-primary"><span class="plus">+</span> Nueva mascota</button></div>
+          <div class="toolbar"><div class="search-box"><span>⌕</span><input id="petSearch" type="search" placeholder="Buscar por nombre, especie o familia…"></div><select id="speciesFilter" aria-label="Filtrar por especie"><option value="">Todas las especies</option></select><span class="result-count" id="petResultCount"></span></div>
+          <div class="table-wrap"><table><thead><tr><th>MASCOTA</th><th>ESPECIE</th><th>RAZA</th><th>FAMILIA</th><th>NACIMIENTO</th><th></th></tr></thead><tbody id="petRows"></tbody></table></div>
+        </section>
+        <section id="view-duenos" class="view">
+          <div class="page-title-row"><div><span class="eyebrow">FAMILIAS</span><h1>Personas que cuidan</h1><p>Conoce a las familias detrás de cada paciente.</p></div><button id="addOwnerBtn" class="button button-primary"><span class="plus">+</span> Nuevo dueño</button></div>
+          <div class="toolbar"><div class="search-box"><span>⌕</span><input id="ownerSearch" type="search" placeholder="Buscar por nombre o correo…"></div><span class="result-count" id="ownerResultCount"></span></div>
+          <div id="ownerGrid" class="owner-grid"></div>
+        </section>
+      </main>
+      <footer class="app-footer"><span>Hecho con cuidado para cada patita <span class="footer-heart">♥</span></span><span>VetCare · Gestión veterinaria</span></footer>
+    </section>
+  </div>
+
+  <dialog id="petDialog" class="modal"><form id="petForm" method="dialog"><div class="modal-head"><div><span class="eyebrow">FICHA DEL PACIENTE</span><h2 id="petDialogTitle">Registrar mascota</h2></div><button class="icon-button close-dialog" type="button" aria-label="Cerrar">×</button></div><input name="id" type="hidden"><label>Nombre de la mascota<input name="nombre" required minlength="2" maxlength="80" placeholder="Ej. Luna"></label><div class="form-row"><label>Especie<input name="especie" required maxlength="40" placeholder="Perro, gato…"></label><label>Raza<input name="raza" required maxlength="60" placeholder="Ej. Criollo"></label></div><div class="form-row"><label>Fecha de nacimiento<input name="fechaNacimiento" type="date" required></label><label>Familia<select name="duenoId" required></select></label></div><div class="modal-actions"><button class="button button-quiet close-dialog" type="button">Cancelar</button><button class="button button-primary" type="submit">Guardar mascota</button></div></form></dialog>
+  <dialog id="ownerDialog" class="modal"><form id="ownerForm" method="dialog"><div class="modal-head"><div><span class="eyebrow">FICHA DE LA FAMILIA</span><h2 id="ownerDialogTitle">Registrar dueño</h2></div><button class="icon-button close-dialog" type="button" aria-label="Cerrar">×</button></div><input name="id" type="hidden"><label>Nombre completo<input name="nombre" required minlength="2" maxlength="100" placeholder="Nombre y apellido"></label><label>Correo electrónico<input name="correo" type="email" required maxlength="150" placeholder="familia@correo.com"></label><label>Teléfono<input name="telefono" type="tel" required minlength="7" maxlength="20" placeholder="Número de contacto"></label><div class="modal-actions"><button class="button button-quiet close-dialog" type="button">Cancelar</button><button class="button button-primary" type="submit">Guardar dueño</button></div></form></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/app.js" defer></script>
+</body>
+</html>

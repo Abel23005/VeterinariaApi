@@ -8,6 +8,7 @@ public partial class VeterinariaContext(DbContextOptions<VeterinariaContext> opt
 {
     public virtual DbSet<Dueno> Duenos => Set<Dueno>();
     public virtual DbSet<Mascota> Mascotas => Set<Mascota>();
+    public virtual DbSet<Usuario> Usuarios => Set<Usuario>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -21,6 +22,7 @@ public partial class VeterinariaContext(DbContextOptions<VeterinariaContext> opt
             entity.Property(e => e.Telefono).HasMaxLength(20);
             entity.HasIndex(e => e.Correo).IsUnique();
         });
+        modelBuilder.Entity<Usuario>(entity => { entity.HasKey(e=>e.UsuarioId); entity.ToTable("Usuarios"); entity.Property(e=>e.UsuarioId).HasColumnName("UsuarioID"); entity.Property(e=>e.Correo).HasMaxLength(150).IsRequired(); entity.Property(e=>e.ClaveHash).HasMaxLength(200).IsRequired(); entity.Property(e=>e.Rol).HasMaxLength(40).IsRequired(); entity.HasIndex(e=>e.Correo).IsUnique(); });
         modelBuilder.Entity<Mascota>(entity =>
         {
             entity.HasKey(e => e.MascotaId);
