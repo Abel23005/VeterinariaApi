@@ -122,6 +122,8 @@ No se usa `ReverseMap`: los modelos de entrada y salida tienen formas distintas 
 
 Se ejecutaron 53 solicitudes HTTP contra la API local, conectada a SQL Server, con tokens de Recepcionista y Veterinario. El registro por caso está en `evidencias/pruebas-http-jwt-2026-11-18.csv`; incluye los resultados 200, 201, 204, 400, 401, 403, 404 y 409. Se limpiaron los registros temporales al terminar.
 
+Capturas PNG de los casos representativos por rol: [Recepcionista](evidencias/captura-pruebas-recepcionista.png) y [Veterinario](evidencias/captura-pruebas-veterinario.png).
+
 
 ## Capturas de pruebas automatizadas
 
