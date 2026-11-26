@@ -7,8 +7,9 @@ using Ocelot.Middleware;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration
-    .AddJsonFile("ocelot.json", optional: false, reloadOnChange: true)
-    .AddJsonFile($"ocelot.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
+    .SetBasePath(builder.Environment.ContentRootPath)
+    .AddJsonFile("ocelot.json", optional: false, reloadOnChange: false)
+    .AddJsonFile($"ocelot.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: false);
 
 var jwt = builder.Configuration.GetSection("Jwt");
 var secret = jwt["Clave"] ?? throw new InvalidOperationException("Falta Jwt:Clave en secretos o variables de entorno.");
@@ -43,5 +44,6 @@ var app = builder.Build();
 app.UseAuthentication();
 app.UseAuthorization();
 await app.UseOcelot();
+await app.RunAsync();
 
 public partial class Program { }
