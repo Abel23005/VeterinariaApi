@@ -1,0 +1,17 @@
+@service = http://localhost:5108
+@token = PEGA_AQUI_EL_TOKEN
+
+### Sin token: debe responder 401
+GET {{service}}/api/propietarios
+
+### Lista protegida
+GET {{service}}/api/propietarios
+Authorization: Bearer {{token}}
+
+### Consulta por id protegida
+GET {{service}}/api/propietarios/1
+Authorization: Bearer {{token}}
+
+### Id inexistente: debe responder 404
+GET {{service}}/api/propietarios/999
+Authorization: Bearer {{token}}

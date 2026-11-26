@@ -139,3 +139,64 @@ Las pruebas automatizadas originales usan SQLite en memoria. Además, la evidenc
 2. **Claims:** el token incluye `sub` para identificar al usuario, `email` para mostrar su perfil y `rol` para aplicar permisos. También incorpora emisor, audiencia y vencimiento. Nunca incluiría contraseñas, hashes, claves secretas ni datos sensibles innecesarios: el contenido del JWT firmado se puede leer, aunque no modificar sin invalidar la firma.
 3. **Contraseña en texto:** si se filtra la base de datos, cualquiera puede leer las claves y probarlas en otros servicios donde se hayan reutilizado. BCrypt guarda un hash unidireccional con salt; el login verifica la clave contra ese hash.
 4. **Rol asignado por el servidor:** el registro crea usuarios Recepcionista y no recibe el rol desde el cliente. Así, un usuario no puede solicitar permisos de Veterinario modificando su petición. La API lee el rol confiable de la base y lo firma en el token.
+
+## Laboratorio 15 microservicios con API Gateway y Ocelot
+
+La solución agrega dos procesos independientes a la API de la semana 14:
+
+- `GatewayApi`: único punto de entrada del cliente en `http://localhost:5000`.
+- `Veterinaria.Api`: API principal de dueños y mascotas, sin cambios en su lógica, en `http://localhost:5107`.
+- `Propietarios.Api`: segundo microservicio con propietarios en memoria, en `http://localhost:5108`.
+
+El cliente debe llamar las rutas `/gateway/...`. El gateway reenvía autenticación y registro a `/api/auth/...`, las consultas de dueños y mascotas a `Veterinaria.Api`, y las consultas de propietarios a `Propietarios.Api`. Las escrituras de la API principal y todos los endpoints del segundo microservicio exigen JWT en el gateway; la API principal vuelve a aplicar sus roles y sus reglas.
+
+### Configuración segura
+
+No hay claves JWT ni cadenas de conexión en el repositorio. En cada proyecto define la misma clave, emisor y audiencia. Para desarrollo local:
+
+```powershell
+$jwt = "genera-una-clave-aleatoria-local-de-al-menos-32-caracteres"
+dotnet user-secrets --project Veterinaria.Api set "Jwt:Clave" $jwt
+dotnet user-secrets --project Veterinaria.Api set "ConnectionStrings:Veterinaria" "<cadena-local-de-SQL-Server>"
+dotnet user-secrets --project GatewayApi set "Jwt:Clave" $jwt
+dotnet user-secrets --project Propietarios.Api set "Jwt:Clave" $jwt
+```
+
+Ejecuta los tres procesos en terminales separadas:
+
+```powershell
+dotnet run --project Veterinaria.Api --launch-profile http
+dotnet run --project Propietarios.Api --launch-profile http
+dotnet run --project GatewayApi --launch-profile http
+```
+
+### Tabla de rutas del gateway
+
+| Upstream cliente → gateway | Método | Downstream gateway → servicio | Token en gateway |
+|---|---|---|---|
+| `/gateway/auth/{everything}` | POST | `http://localhost:5107/api/auth/{everything}` | No |
+| `/gateway/duenos{everything}` | GET | `http://localhost:5107/api/duenos{everything}` | No, la API S14 conserva su `[Authorize]` |
+| `/gateway/duenos` y `/gateway/duenos/{everything}` | POST, PUT, DELETE | `http://localhost:5107/api/duenos{everything}` | Sí; además se exige rol en la API |
+| `/gateway/mascotas{everything}` | GET | `http://localhost:5107/api/mascotas{everything}` | No, la API S14 conserva su `[Authorize]` |
+| `/gateway/mascotas` y `/gateway/mascotas/{everything}` | POST, PUT, DELETE | `http://localhost:5107/api/mascotas{everything}` | Sí; además se exige rol en la API |
+| `/gateway/propietarios{everything}` | GET | `http://localhost:5108/api/propietarios{everything}` | Sí |
+
+La configuración completa está en `GatewayApi/ocelot.json`. El upstream conserva el prefijo `/gateway` y el downstream cambia al prefijo `/api` y al puerto del servicio correspondiente. La ruta `propietarios` sirve para demostrar 200, 401, 404 y 502 sin depender de la base de datos.
+
+### Pruebas exigidas
+
+Usa `GatewayApi/requests.http` y `Propietarios.Api/requests.http` después de aplicar los dos scripts SQL y colocar el token devuelto por login. Verifica por el gateway:
+
+- 200: listar propietarios con token y consultar datos disponibles.
+- 201: registrar un dueño con un token de Recepcionista o Veterinario.
+- 204: actualizar o eliminar un recurso existente con el rol adecuado.
+- 401: llamar a `/gateway/propietarios` sin token y llamar directamente a `Propietarios.Api` sin token.
+- 403: usar el token de Recepcionista en una operación que exige Veterinario.
+- 404: consultar `/gateway/propietarios/999` o un recurso inexistente.
+- 502: detener `Propietarios.Api` y repetir una llamada autenticada a `/gateway/propietarios`.
+
+### Publicación
+
+La guía `deployment/README.md` documenta una opción de bajo costo con Azure App Service Free F1 para los tres procesos y Azure SQL Database Free Tier para la base. Requiere una suscripción Azure del estudiante, porque los nombres públicos, secretos, cadena de conexión y enlaces de evidencia pertenecen a su cuenta. Después de crear los tres hosts, copia `GatewayApi/ocelot.Production.example.json` como `ocelot.Production.json`, reemplaza los hosts públicos y usa HTTPS/443 en los downstreams.
+
+No se inventan capturas, enlaces de nube ni enlace de video: deben obtenerse al ejecutar la solución, publicarla y grabar la sustentación con la cámara encendida.

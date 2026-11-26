@@ -1,0 +1,39 @@
+@gateway = http://localhost:5000
+@token = PEGA_AQUI_EL_TOKEN
+
+### Login público, reenviado a Veterinaria.Api
+POST {{gateway}}/gateway/auth/login
+Content-Type: application/json
+
+{
+  "correo": "recepcion@example.com",
+  "clave": "VetCare123!"
+}
+
+### Consulta de dueños por el gateway
+GET {{gateway}}/gateway/duenos
+
+### Consulta del microservicio 2, exige token en el gateway
+GET {{gateway}}/gateway/propietarios
+Authorization: Bearer {{token}}
+
+### Escritura de dueños, exige token y rol en Veterinaria.Api
+POST {{gateway}}/gateway/duenos
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nombre": "Cliente Gateway",
+  "correo": "gateway@example.com",
+  "telefono": "999888777"
+}
+
+### 401 en microservicio 2 a través del gateway
+GET {{gateway}}/gateway/propietarios
+
+### 404 en microservicio 2 a través del gateway
+GET {{gateway}}/gateway/propietarios/999
+
+### 502: detener Propietarios.Api antes de ejecutar
+GET {{gateway}}/gateway/propietarios
+Authorization: Bearer {{token}}

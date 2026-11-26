@@ -4,4 +4,6 @@
   <Project Path="Veterinaria.Entidades/Veterinaria.Entidades.csproj" />
   <Project Path="Veterinaria.Negocio/Veterinaria.Negocio.csproj" />
   <Project Path="Veterinaria.Tests/Veterinaria.Tests.csproj" />
+  <Project Path="GatewayApi/GatewayApi.csproj" />
+  <Project Path="Propietarios.Api/Propietarios.Api.csproj" />
 </Solution>
